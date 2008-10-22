@@ -1,0 +1,68 @@
+#   Copyright 2008 University of Bath
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+# Demo module for hungrybot, marked up to show how to write modules
+#
+# Written by Tom Natt, March '08
+
+# first class in the file must be the desired object
+class HelloModule
+	
+	# must have getters for these three items
+	attr_reader :name, :commands, :times
+	
+	def initialize
+		puts "we're initialising this module"
+		# name is the name of the module (for the HELP option)
+		@name = "Hello World Module"
+		# commands is a hash of user commands (ie those that can be said to the bot)
+		# to the description of the command (as it appears in HELP).
+		# commands should be in lower case
+		@commands = {'speak'=>'makes the bot say hello', 'again'=>'say it again'}
+		# times is an array of the time (in seconds) when things are fired off
+		@times = [10, 50]
+	end
+	
+	# doTime is a method which accepts one of the specified times and triggers an action
+	def doTime(time)
+		if time == 10
+			# any feedback should be returned as a hash of 
+			# [information => array of users to be contacted]
+			return {doSpeak => ["ma1twn@bath.ac.uk"]}
+		elsif time == 50
+			return {doAgain => ["ma1twn@bath.ac.uk"]}
+		end
+	end
+	
+	# doCommand is a method which accepts one of the commands and 
+	# the user who made the request and triggers an action. Commands are sent 
+	# from bot to module in lower case
+	def doCommand(command, sender)
+		puts command
+		if command == 'speak'
+			# any response should be an array of strings (in case of multiline response)
+			return [doSpeak]
+		elsif command == 'again'
+			return [doAgain]
+		end
+	end
+	
+	def doSpeak
+		return "hello world!"
+	end
+	
+	def doAgain
+		return "say it again - say yeah"
+	end
+
+end

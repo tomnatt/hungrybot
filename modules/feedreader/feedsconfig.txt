@@ -1,0 +1,16 @@
+#  config file for feedreader module
+
+# interval between polling the feeds (rough, in seconds)
+interval = 600
+
+# max length of description to be sent to subscriber (characters)
+maxlength = 300
+
+# web proxy settings - set to nil for no proxy
+proxy_addr = wwwproxy.bath.ac.uk
+proxy_port = 3128
+
+# file settings
+subscriptionfile = feeds.txt
+#subscriptionfile = testfeeds.txt
+lastitemfile = lastmeal.txt

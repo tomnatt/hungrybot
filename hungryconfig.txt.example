@@ -1,0 +1,11 @@
+# Config file for hungrybot
+
+# modules directory
+modules = modules
+
+# authentication
+username = romeo@montague.it
+password = ilovejuliet
+
+# (rough) frequency of loop cycle (in seconds)
+pause = 1
