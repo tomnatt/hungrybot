@@ -22,14 +22,14 @@ require "net/http"
 class PersonFinder
 
     attr_reader :name, :commands, :times
-    
+
     def initialize
         @name = "Personfinder Module"
         @commands = {'whois' => '($name / $uid) search ldap for the details of person',
                     'who' => 'As whois'}
         @times = Array.new
     end
-    
+
     def doCommand(command, sender)
         return findPerson(command)
     end
@@ -41,14 +41,14 @@ class PersonFinder
         if id == nil then
             response << "You must specify a name or username"
         else
-            url = URI.parse("http://www.bath.ac.uk/contact/?search=basic&pgeneralsearch="+URI.escape(id)+"&submit=Search")
+            url = URI.parse("http://www.bath.ac.uk/contact/?search=basic&pgeneralsearch="+URI.escape(id)+"&submit=Search&embed=true")
             # get the XML data as a string
             xml_data = Net::HTTP.get_response(url).body
             soup = BeautifulSoup.new(xml_data)
             results = soup.find_all(nil, :attrs => {'class' => 'vcard'})
               if (results.length == 0) then
                 response << "I couldn't find anyone with those details, sorry!"
-              elsif (results.length <= 10) then 
+              elsif (results.length <= 10) then
                 #response << "Name, Job title, Username, Phone number"
                 soup.find_all(nil, :attrs => {'class' => 'vcard'}).each { |card|
                     # find and add the person's name
@@ -80,12 +80,12 @@ class PersonFinder
                     phonestring = ""
                     if phones.length>0
                         phonestring = "Their extension is "+phones.join(" or ")
-                    end                    
+                    end
                     response << name+" ("+username+") is a "+title+". "+phonestring
                 }
               else
                 response << "Your search has found too many people - please be more specific"
-              end            
+              end
         end
         return response
     end
