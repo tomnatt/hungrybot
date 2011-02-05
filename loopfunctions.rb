@@ -45,7 +45,7 @@ def processMessage(message)
             }
         }
     end
-    @im.deliver(message.from, message.body)
+    default_action(message)
 end
 
 def doTimeTrigger(count)
@@ -56,8 +56,8 @@ def doTimeTrigger(count)
                 responses = mod.doTime(time)
                 if (responses != nil) then
                     responses.each { |info, users|
-                        users.each { |user| 
-                            if (user != nil) then 
+                        users.each { |user|
+                            if (user != nil) then
                                 @im.deliver(user, info)
                             end
                         }
@@ -66,4 +66,14 @@ def doTimeTrigger(count)
             end
         }
     }
+end
+
+def default_action(message)
+    # if the message starts with four numbers, try and find a matching phone number owner
+    # otherwise just echo the message back to the sender
+    if message.body =~ /\d{4}/
+        PhoneFinder.new
+    else
+        @im.deliver(message.from, message.body)
+    end
 end
