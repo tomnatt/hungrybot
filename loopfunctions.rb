@@ -72,7 +72,8 @@ def default_action(message)
     # if the message starts with four numbers, try and find a matching phone number owner
     # otherwise just echo the message back to the sender
     if message.body =~ /\d{4}/
-        PhoneFinder.new
+        # we already have PhoneFinder somewhere in @loaded - is looping the best way to find it?
+        # PhoneFinder.new
     else
         @im.deliver(message.from, message.body)
     end
