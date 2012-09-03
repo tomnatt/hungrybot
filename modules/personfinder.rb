@@ -88,7 +88,7 @@ class PersonFinder
                     if phones.length > 0
                         phonestring = "Their extension is "+phones.join(" or ")
                     end                    
-                        response << name + " (" + username + ") is a " + title + ". " + phonestring
+                    response << name + " (" + username + ") is a " + title + ". " + phonestring
                 }
             else
                 response << "Your search has found too many people - please be more specific"
