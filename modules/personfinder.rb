@@ -16,20 +16,20 @@
 #
 # Written by Tom Natt, March '08
 
-require "rubyful_soup"
+require "nokogiri"
 require "net/http"
 
 class PersonFinder
 
     attr_reader :name, :commands, :times
-
+    
     def initialize
         @name = "Personfinder Module"
         @commands = {'whois' => '($name / $uid) search ldap for the details of person',
                     'who' => 'As whois'}
         @times = Array.new
     end
-
+    
     def doCommand(command, sender)
         return findPerson(command)
     end
@@ -40,52 +40,59 @@ class PersonFinder
         id = command.split(" ",2)[1]
         if id == nil then
             response << "You must specify a name or username"
+        elsif id.length <= 3 then
+            response << "You must give me at least three characters"
         else
-            url = URI.parse("http://www.bath.ac.uk/contact/?search=basic&pgeneralsearch="+URI.escape(id)+"&submit=Search&embed=true")
+            url = URI.parse("http://www.bath.ac.uk/contact/?search=basic&pgeneralsearch="+URI.escape(id)+"&submit=Search")
             # get the XML data as a string
             xml_data = Net::HTTP.get_response(url).body
-            soup = BeautifulSoup.new(xml_data)
-            results = soup.find_all(nil, :attrs => {'class' => 'vcard'})
-              if (results.length == 0) then
+            doc = Nokogiri::HTML(xml_data)
+            results = doc.search('.vcard')
+            if (results.length == 0) then
                 response << "I couldn't find anyone with those details, sorry!"
-              elsif (results.length <= 10) then
+            elsif (results.length <= 10) then 
                 #response << "Name, Job title, Username, Phone number"
-                soup.find_all(nil, :attrs => {'class' => 'vcard'}).each { |card|
+                results = doc.search('.vcard').each { |card|
                     # find and add the person's name
-                    name = card.find(nil, :attrs => {'class' => 'fn'})
-                    if (name != nil && name.a.string != nil) then
-                        name = name.a.string
-                    else
-                        name = ""
-                    end
-                    # find and add the person's username
-                    username = card.find(nil, :attrs => {'class' => 'username'})
-                    if (username != nil && username.string != nil) then
-                        username = username.string
-                    else
-                        username = ""
-                    end
+                    namesoup = card.search('.fn')
+
+                    # remove <span> from input
+                    name = Array.new
+                    namesoup.search('a').each { |t|
+                        name << t.content
+                    }
+                    name = name.join(' ')
+
+                    # find and add the person's username, removing any <span>s
+                    username = ""
+                    card.search('.username').each { |t|
+                        username = t.content
+                    }
+
                     # find and add the person's job title
-                    title = card.find(nil, :attrs => {'class' => 'title'})
-                    if (title != nil && title.string != nil) then
-                        title = title.string
-                    else
-                        title = ""
-                    end
+                    title = ""
+                    card.search('.title').each { |t|
+                        if (t != nil && t.content != nil) then
+                            title = t.content
+                        else
+                            t = ""
+                        end
+                    }
+
                     # find and add the person's phone number
                     phones = Array.new
-                    card.find_all(nil, :attrs => {'class' => 'tel'}).each { |number|
-                        phones << number.find(nil, :attrs => {'class' => 'value'}).string.strip
+                    card.search('.tel').each { |number|
+                        phones << number.search('.value a')[0].content.strip
                     }
                     phonestring = ""
-                    if phones.length>0
+                    if phones.length > 0
                         phonestring = "Their extension is "+phones.join(" or ")
-                    end
-                    response << name+" ("+username+") is a "+title+". "+phonestring
+                    end                    
+                        response << name + " (" + username + ") is a " + title + ". " + phonestring
                 }
-              else
+            else
                 response << "Your search has found too many people - please be more specific"
-              end
+            end         
         end
         return response
     end
