@@ -38,9 +38,9 @@ class HelloModule
         if time == 10
             # any feedback should be returned as a hash of 
             # [information => array of users to be contacted]
-            return {doSpeak => ["ma1twn@bath.ac.uk"]}
+            return {doSpeak => ["bob@example.com"]}
         elsif time == 50
-            return {doAgain => ["ma1twn@bath.ac.uk"]}
+            return {doAgain => ["bob@example.com"]}
         end
     end
 
