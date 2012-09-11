@@ -58,7 +58,7 @@ class BambooBuild
             if (command =~ /successful/) then
                 response << "Live homepage updated successfully. " + 
                             (if commit_list.length > 0 then "Go and congratulate " + commit_list.join(" and ") else "" end)
-                response << "All changes can be see here:"
+                response << "All changes can be seen here:"
                 response << "http://vcs.example.com/bamboo/browse/PROJECT-PLAN-" + build[0].to_s + "/commit"
                 response << ""
                 response << "View the awesome at:"
@@ -66,7 +66,7 @@ class BambooBuild
             else
                 response << "Live homepage update has failed. PANIC! " + 
                             (if commit_list.length > 0 then "Especially if you're " + commit_list.join(" or ") else "" end)
-                response << "All changes can be see here:"
+                response << "All changes can be seen here:"
                 response << "http://vcs.example.com/bamboo/browse/PROJECT-PLAN-" + build[0].to_s + "/commit"
                 response << ""
                 response << "Check this is still there!"
@@ -76,7 +76,7 @@ class BambooBuild
             if (command =~ /successful/) then
                 response << "Test homepage updated successfully. " + 
                             (if commit_list.length > 0 then "This message brought to you by " + commit_list.join(" and ") else "" end)
-                response << "All changes can be see here:"
+                response << "All changes can be seen here:"
                 response << "http://vcs.example.com/bamboo/browse/PROJECT-PLAN-" + build[0].to_s + "/commit"
                 response << ""
                 response << "View the new awesome at:"
@@ -84,7 +84,7 @@ class BambooBuild
             else
                 response << "Test homepage update has failed. "
                             (if commit_list.length > 0 then "It has been broken by " + commit_list.join(" or ") else "" end)
-                response << "All changes can be see here:"
+                response << "All changes can be seen here:"
                 response << "http://vcs.example.com/bamboo/browse/PROJECT-PLAN-" + build[0].to_s + "/commit"
                 response << ""
                 response << "View the fail at:"
