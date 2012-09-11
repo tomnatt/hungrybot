@@ -16,7 +16,10 @@
 
 def processMessage(message)
     puts "Received message from #{message.from}: #{message.body}"
+
+    # grab the first word of the incoming message in lower case, removing the first \ if present
     com = message.body.split(" ",2)[0].downcase.sub(/^\//,'')
+    
     # request for help (ie the command list)
     if (com.eql?("commands") || com.eql?("help")) then
         @loaded.each { |mod|
@@ -30,14 +33,24 @@ def processMessage(message)
     else
         # request to one of the modules
         @loaded.each { |mod|
+            # hunt through the command list, looking for a match
             mod.commands.each_key { |command|
                 if (com.eql?(command.downcase)) then
                     # send command to module in lower case removing the leading / if present
                     request = message.body.downcase.sub(/^\//,'')
-                    answer = mod.doCommand(request, message.from.to_s)
+                    answer, recipients = mod.doCommand(request, message.from.to_s)
+                    
+                    # if no recipient specified, default to the person who sent the message
+                    if (recipients == nil) then
+                        recipients = [message.from]
+                    end
+
                     if (answer != nil) then
-                        answer.each { |line|
-                            @im.deliver(message.from, line)
+                        # if there is an answer, broadcast it to each user line by line
+                        recipients.each { |recipient|
+                            answer.each { |line|
+                                @im.deliver(recipient, line)
+                            }
                         }
                     end
                     return
@@ -45,7 +58,8 @@ def processMessage(message)
             }
         }
     end
-    default_action(message)
+    # if all else fails, echo back
+    @im.deliver(message.from, message.body)
 end
 
 def doTimeTrigger(count)
@@ -56,9 +70,13 @@ def doTimeTrigger(count)
                 responses = mod.doTime(time)
                 if (responses != nil) then
                     responses.each { |info, users|
-                        users.each { |user|
-                            if (user != nil) then
-                                @im.deliver(user, info)
+                        users.each { |user| 
+                            if (user != nil) then 
+                                if (info != nil) then
+                                    info.each { |line|
+                                        @im.deliver(user, line)
+                                    }
+                                end
                             end
                         }
                     }
@@ -66,15 +84,4 @@ def doTimeTrigger(count)
             end
         }
     }
-end
-
-def default_action(message)
-    # if the message starts with four numbers, try and find a matching phone number owner
-    # otherwise just echo the message back to the sender
-    if message.body =~ /\d{4}/
-        # we already have PhoneFinder somewhere in @loaded - is looping the best way to find it?
-        # PhoneFinder.new
-    else
-        @im.deliver(message.from, message.body)
-    end
 end

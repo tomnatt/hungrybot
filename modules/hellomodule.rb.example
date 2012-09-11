@@ -17,52 +17,53 @@
 
 # first class in the file must be the desired object
 class HelloModule
-	
-	# must have getters for these three items
-	attr_reader :name, :commands, :times
-	
-	def initialize
-		puts "we're initialising this module"
-		# name is the name of the module (for the HELP option)
-		@name = "Hello World Module"
-		# commands is a hash of user commands (ie those that can be said to the bot)
-		# to the description of the command (as it appears in HELP).
-		# commands should be in lower case
-		@commands = {'speak'=>'makes the bot say hello', 'again'=>'say it again'}
-		# times is an array of the time (in seconds) when things are fired off
-		@times = [10, 50]
-	end
-	
-	# doTime is a method which accepts one of the specified times and triggers an action
-	def doTime(time)
-		if time == 10
-			# any feedback should be returned as a hash of 
-			# [information => array of users to be contacted]
-			return {doSpeak => ["ma1twn@bath.ac.uk"]}
-		elsif time == 50
-			return {doAgain => ["ma1twn@bath.ac.uk"]}
-		end
-	end
-	
-	# doCommand is a method which accepts one of the commands and 
-	# the user who made the request and triggers an action. Commands are sent 
-	# from bot to module in lower case
-	def doCommand(command, sender)
-		puts command
-		if command == 'speak'
-			# any response should be an array of strings (in case of multiline response)
-			return [doSpeak]
-		elsif command == 'again'
-			return [doAgain]
-		end
-	end
-	
-	def doSpeak
-		return "hello world!"
-	end
-	
-	def doAgain
-		return "say it again - say yeah"
-	end
+        
+    # must have getters for these three items
+    attr_reader :name, :commands, :times
+
+    def initialize
+        puts "we're initialising this module"
+        # name is the name of the module (for the HELP option)
+        @name = "Hello World Module"
+        # commands is a hash of user commands (ie those that can be said to the bot)
+        # to the description of the command (as it appears in HELP).
+        # commands should be in lower case
+        @commands = {'speak'=>'makes the bot say hello', 'again'=>'say it again'}
+        # times is an array of the time (in seconds) when things are fired off
+        @times = [10, 50]
+    end
+
+    # doTime is a method which accepts one of the specified times and triggers an action
+    def doTime(time)
+        if time == 10
+            # any feedback should be returned as a hash of 
+            # [information => array of users to be contacted]
+            return {doSpeak => ["ma1twn@bath.ac.uk"]}
+        elsif time == 50
+            return {doAgain => ["ma1twn@bath.ac.uk"]}
+        end
+    end
+
+    # doCommand is a method which accepts one of the commands and 
+    # the user who made the request and triggers an action. Commands are sent 
+    # from bot to module in lower case
+    def doCommand(command, sender)
+        puts command
+        if command == 'speak'
+            recipients = [Jabber::JID.new("bob@example.com"), Jabber::JID.new("tim@example.com")]
+            # any response should be an array of strings (in case of multiline response), can optionally also include an array of recipient JIDs
+            return [doSpeak], recipients
+        elsif command == 'again'
+            return [doAgain]
+        end
+    end
+
+    def doSpeak
+        return "hello world!"
+    end
+
+    def doAgain
+        return "say it again - say yeah"
+    end
 
 end
