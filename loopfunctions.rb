@@ -48,7 +48,7 @@ def processMessage(message)
                     if (answer != nil) then
                         # if there is an answer, broadcast it to each user line by line
                         recipients.each { |recipient|
-                            answer.each { |line|
+                            answer.each_line { |line|
                                 @im.deliver(recipient, line)
                             }
                         }

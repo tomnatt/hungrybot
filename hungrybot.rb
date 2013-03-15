@@ -28,7 +28,7 @@ require 'xmpp4r'
 require 'xmpp4r/roster/iq/roster'
 require 'xmpp4r-simple'
 
-require 'loopfunctions'
+require './loopfunctions.rb'
 
 # config parameters all default to nil
 @username = nil
@@ -58,7 +58,7 @@ file.close
 @maxcount = 1
 Dir.new(@modules).entries.each { |file| 
 	if file =~ /.+\.rb$/ then
-		require "#{@modules}/#{file}"
+		require "./#{@modules}/#{file}"
 		# for each module find the object name and initialize it
 		modnum = 0
 		modulefile = File.new("#{@modules}/#{file}", "r")

@@ -10,6 +10,8 @@ on your setup. With that in mind:
 
 For help, ideas or to submit patches contact web-support@bath.ac.uk
 
+We ported hungrybot to ruby 1.9.
+
 ## Getting started
 
 This will get the basics of hungrybot up and running - some bits won't work!
@@ -21,6 +23,7 @@ an account on your Jabber/XMPP server
 to feeds.txt
 * Open modules/rt and make a copy of users.txt.example and rename it
 to users.txt
+* from the command line run 'bundle install'
 * from the command line run 'ruby hungrybot.rb'
 * add hungrybot to your roster and send it the message "commands"
 
