@@ -1,7 +1,5 @@
 # Getting started with Hungrybot
 
-Last modified: $LastChangedDate$
-
 Hungrybot logs in to a Jabber/XMPP server and responds to commands you send. 
 Each command is provided by a Ruby file in the modules/ directory. To write a 
 new module see the "Writing modules" section below.
