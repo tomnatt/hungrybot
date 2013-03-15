@@ -16,20 +16,15 @@ For help, ideas or to submit patches contact web-support@bath.ac.uk
 
 This will get the basics of hungrybot up and running - some bits won't work!
 
-# Make a copy of hungryconfig.txt.example and rename it to hungryconfig.txt
-
-# open hungryconfig.txt change the username and password fields to a user with
+* Make a copy of hungryconfig.txt.example and rename it to hungryconfig.txt
+* open hungryconfig.txt change the username and password fields to a user with
 an account on your Jabber/XMPP server
-
-# Open modules/feedreader and make a copy of feeds.txt.example and rename it
+* Open modules/feedreader and make a copy of feeds.txt.example and rename it
 to feeds.txt
-
-# Open modules/rt and make a copy of users.txt.example and rename it
+* Open modules/rt and make a copy of users.txt.example and rename it
 to users.txt
-
-# from the command line run 'ruby hungrybot.rb'
-
-# add hungrybot to your roster and send it the message "commands"
+* from the command line run 'ruby hungrybot.rb'
+* add hungrybot to your roster and send it the message "commands"
 
 Congratulations! Hungrybot works!
 
@@ -39,12 +34,10 @@ Configuring the Feed Reader module
 The feed reader module provides a fixed list of feeds which users can receive
 updates from.
 
-# Open modules/feedreader/feeds.txt
-
-# For each feed you want people to be able to subscribe to put the URL on a 
+* Open modules/feedreader/feeds.txt
+* For each feed you want people to be able to subscribe to put the URL on a 
 new line followed by a space and a colon
-
-# Done! Users can now list the available feeds by typing "feeds" and subscribe
+* Done! Users can now list the available feeds by typing "feeds" and subscribe
 to feeds by sending "add feedurl" (which will updates feeds.txt) 
 
 Writing modules
