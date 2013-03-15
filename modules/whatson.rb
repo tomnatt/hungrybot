@@ -50,7 +50,7 @@ class WhatsOnModule
                 month = Chronic.parse(mydate).month
                 year = Chronic.parse(mydate).year
             rescue Exception
-                return ["Sorry, I couldn't understand that date! Try again"]
+                return ["Sorry, I couldn't understand that date! Try again"], [sender]
             end
         else
             now = Time.new
@@ -59,7 +59,7 @@ class WhatsOnModule
             year = now.year
         end
         
-        return getWhatsOn(day.to_s, month.to_s, year.to_s)
+        return getWhatsOn(day.to_s, month.to_s, year.to_s), [sender]
 	end    
 
 	def getWhatsOn(whichday, whichmonth, whichyear)

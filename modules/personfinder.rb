@@ -31,7 +31,7 @@ class PersonFinder
     end
     
     def doCommand(command, sender)
-        return findPerson(command)
+        return findPerson(command), [sender]
     end
 
     def findPerson(command)
@@ -40,7 +40,7 @@ class PersonFinder
         id = command.split(" ",2)[1]
         if id == nil then
             response << "You must specify a name or username"
-        elsif id.length <= 3 then
+        elsif id.length < 3 then
             response << "You must give me at least three characters"
         else
             url = URI.parse("http://www.bath.ac.uk/contact/?search=basic&pgeneralsearch="+URI.escape(id)+"&submit=Search")
@@ -86,7 +86,7 @@ class PersonFinder
                     }
                     phonestring = ""
                     if phones.length > 0
-                        phonestring = "Their extension is "+phones.join(" or ")
+                        phonestring = "Their extension is " + phones.join(" or ")
                     end                    
                     response << name + " (" + username + ") is a " + title + ". " + phonestring
                 }

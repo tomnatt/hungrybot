@@ -54,13 +54,13 @@ class FeedReader
 	
 	def doCommand(command, sender)
 		if (command =~ /^feeds$/) then
-			return getFeeds
+			return getFeeds, [sender]
 		elsif (command =~/^list$/) then
-			return doList(sender)
+			return doList(sender), [sender]
 		elsif (command =~ /^add/ || command =~ /^subscribe/) then
-			return doSubscribe(command, sender)
+			return doSubscribe(command, sender), [sender]
 		elsif (command =~ /^remove/ || command =~ /^unsubscribe/) then
-			return doUnsubscribe(command, sender)
+			return doUnsubscribe(command, sender), [sender]
 		end
 	end
 	
