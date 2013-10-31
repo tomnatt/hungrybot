@@ -23,93 +23,93 @@ require "net/http"
 
 class FeedReader
 
-	attr_reader :name, :commands, :times
-	
-	def initialize
-		# file paths
-		@feedreaderdirectory = "modules/feedreader"
-		configfile = "#{@feedreaderdirectory}/feedsconfig.txt"
-		@subscriptionfile = "#{@feedreaderdirectory}/feeds.txt"
-		@lastitemfile = "#{@feedreaderdirectory}/lastmeal.txt"
-	
-		# defaults for config options
-		@feedreaderinterval = 300
-		@maxdescription = 600
-		@proxy_addr = nil
-		@proxy_port = nil
+    attr_reader :name, :commands, :times
+    
+    def initialize
+        # file paths 
+        @feedreaderdirectory = "modules/feedreader"
+        configfile = "#{@feedreaderdirectory}/feedsconfig.txt"
+        @subscriptionfile = "#{@feedreaderdirectory}/feeds.txt"
+        @lastitemfile = "#{@feedreaderdirectory}/lastmeal.txt"
+    
+        # defaults for config options
+        @feedreaderinterval = 300
+        @maxdescription = 600
+        @proxy_addr = nil
+        @proxy_port = nil
 
-		# read config options and subscriptions
-		readConfig(configfile)
-		readSubscriptions
-	
-		@name = "FeedReader Module"
-		@commands = {'feeds'=>'list feeds that are available', 
-					'list'=>'list all your feeds',
-					'add'=>'($feed) subscribe to the given feed',
-					'subscribe'=>'as ADD',
-					'remove'=>'($feed) unsubscribe from the given feed',
-					'unsubscribe'=>'as REMOVE'}
-		@times = [@feedreaderinterval]
-	end
-	
-	def doCommand(command, sender)
-		if (command =~ /^feeds$/) then
-			return getFeeds, [sender]
-		elsif (command =~/^list$/) then
-			return doList(sender), [sender]
-		elsif (command =~ /^add/ || command =~ /^subscribe/) then
-			return doSubscribe(command, sender), [sender]
-		elsif (command =~ /^remove/ || command =~ /^unsubscribe/) then
-			return doUnsubscribe(command, sender), [sender]
-		end
-	end
-	
-	def doTime(time)
-		if (time == @feedreaderinterval) then
-			return pollFeeds
-		end
-	end
-	
-	
-	private
-		def readConfig(loc)
-			file = File.new(loc, "r")
-			file.each { |line|
-				if line =~ /^interval/ then
-					@feedreaderinterval = line.split("=",2)[1].strip.to_i
-				elsif line=~ /^maxlength/ then
-					@maxdescription = line.split("=",2)[1].strip.to_i
-				elsif line=~ /^subscriptionfile/ then
-					@subscriptionfile = @feedreaderdirectory + "/" + line.split("=",2)[1].strip
-				elsif line=~ /^lastitemfile/ then
-					@lastitemfile =  @feedreaderdirectory + "/" + line.split("=",2)[1].strip
-				elsif line=~ /^proxy_addr/ then
-					@proxy_addr = line.split("=",2)[1].strip
-				elsif line=~ /^proxy_port/ then
-					@proxy_port = line.split("=",2)[1].strip
-				end
-			}
-			file.close
-		end
-		
-		def readSubscriptions
-			@subscriptions = Hash.new
-			file = File.new(@subscriptionfile, "r")
-			file.each { |line|
-			if !(line =~ /^\#/) then
-				url,allusers = line.split(" : ",2)
-				users = allusers.split(",")
-				users.each { |user|
-					user.strip!
-				}
-				@subscriptions[url] = users
-			end
-			}
-			file.close
-		end
-		
-		def pollFeeds
-			response = Hash.new
+        # read config options and subscriptions
+        readConfig(configfile)
+        readSubscriptions
+    
+        @name = "FeedReader Module"
+        @commands = {'feeds'=>'list feeds that are available', 
+                    'list'=>'list all your feeds',
+                    'add'=>'($feed) subscribe to the given feed',
+                    'subscribe'=>'as ADD',
+                    'remove'=>'($feed) unsubscribe from the given feed',
+                    'unsubscribe'=>'as REMOVE'}
+        @times = [@feedreaderinterval]
+    end
+    
+    def doCommand(command, sender)
+        if (command =~ /^feeds$/) then
+            return getFeeds, [sender]
+        elsif (command =~/^list$/) then
+            return doList(sender), [sender]
+        elsif (command =~ /^add/ || command =~ /^subscribe/) then
+            return doSubscribe(command, sender), [sender]
+        elsif (command =~ /^remove/ || command =~ /^unsubscribe/) then
+            return doUnsubscribe(command, sender), [sender]
+        end
+    end
+    
+    def doTime(time)
+        if (time == @feedreaderinterval) then
+            return pollFeeds
+        end
+    end
+    
+    
+    private
+        def readConfig(loc)
+            file = File.new(loc, "r")
+            file.each { |line|
+                if line =~ /^interval/ then
+                    @feedreaderinterval = line.split("=",2)[1].strip.to_i
+                elsif line=~ /^maxlength/ then
+                    @maxdescription = line.split("=",2)[1].strip.to_i
+                elsif line=~ /^subscriptionfile/ then
+                    @subscriptionfile = @feedreaderdirectory + "/" + line.split("=",2)[1].strip
+                elsif line=~ /^lastitemfile/ then
+                    @lastitemfile =  @feedreaderdirectory + "/" + line.split("=",2)[1].strip
+                elsif line=~ /^proxy_addr/ then
+                    @proxy_addr = line.split("=",2)[1].strip
+                elsif line=~ /^proxy_port/ then
+                    @proxy_port = line.split("=",2)[1].strip
+                end
+            }
+            file.close
+        end
+        
+        def readSubscriptions
+            @subscriptions = Hash.new
+            file = File.new(@subscriptionfile, "r")
+            file.each { |line|
+            if !(line =~ /^\#/) then
+                url,allusers = line.split(" : ",2)
+                users = allusers.split(",")
+                users.each { |user|
+                    user.strip!
+                }
+                @subscriptions[url] = users
+            end
+            }
+            file.close
+        end
+        
+        def pollFeeds
+            response = Hash.new
             # read in the last article
             lastarticles = Hash.new
             if (File.exists?(@lastitemfile)) then
@@ -123,34 +123,34 @@ class FeedReader
             
             # for each feed read out any new articles and update the last article
             @subscriptions.keys.each { |feed|
-				begin
-					# read the feed into an array
-					url = URI.parse(feed)
-					req = Net::HTTP::Get.new(url.path)
-					res = nil
-					if (@proxy_addr == nil || @proxy_port == nil) then
-						res = Net::HTTP.get(url) {|http|
-							http.request(req)
-						}
-					else
-						res = Net::HTTP::Proxy(@proxy_addr, @proxy_port).get(url) {|http|
-							http.request(req)
-						}
-					end
-			
-					# need to check we got a 200 response here
-					if (res == nil) then
-						raise feed +' body was nil'
-					end
-			
-					livefeed = SimpleRSS.parse(res).items
+                begin
+                    # read the feed into an array
+                    url = URI.parse(feed)
+                    req = Net::HTTP::Get.new(url.path)
+                    res = nil
+                    if (@proxy_addr == nil || @proxy_port == nil) then
+                        res = Net::HTTP.get(url) {|http|
+                            http.request(req)
+                        }
+                    else
+                        res = Net::HTTP::Proxy(@proxy_addr, @proxy_port).get(url) {|http|
+                            http.request(req)
+                        }
+                    end
+            
+                    # need to check we got a 200 response here
+                    if (res == nil) then
+                        raise feed +' body was nil'
+                    end
+            
+                    livefeed = SimpleRSS.parse(res).items
                 rescue Exception
                     # something horrible happened
                     puts  "#{Time.now}: Hungrybot failed to parse #{feed}: "+$!
                 end
-					
-				# process feed if we've read it properly	
-				if (livefeed != nil) then	
+                    
+                # process feed if we've read it properly    
+                if (livefeed != nil) then   
                     # read the feed if it is not a new one
                     if (lastarticles.keys.include?(feed)) then 
                         lastitem = lastarticles[feed]
@@ -185,58 +185,58 @@ class FeedReader
                 file << line
             }
             file.close
-			return response
-		end
-		# end of pollFeeds
-		
-		def writeConfig
-			# write a modified config back to file
-			file = File.new(@subscriptionfile, "w")
-			@subscriptions.keys.each { |url|
-				users = ""
-				@subscriptions[url].each { |user|
-					if users.eql?("") then
-						users = user
-					else
-						users = users + "," + user
-					end
-				}
-				line = url + " : " + users + "\n"
-				file << line
-			}
-			file.close
-		end
-		
-		def chopLocation(jid)
-			# remove location information from the jid
-			username,location = jid.split("/",2)
-			return username
-		end
-		
-		def getFeeds
-			# list available feeds
-			answer = Array.new
+            return response
+        end
+        # end of pollFeeds
+        
+        def writeConfig
+            # write a modified config back to file
+            file = File.new(@subscriptionfile, "w")
+            @subscriptions.keys.each { |url|
+                users = ""
+                @subscriptions[url].each { |user|
+                    if users.eql?("") then
+                        users = user
+                    else
+                        users = users + "," + user
+                    end
+                }
+                line = url + " : " + users + "\n"
+                file << line
+            }
+            file.close
+        end
+        
+        def chopLocation(jid)
+            # remove location information from the jid
+            username,location = jid.split("/",2)
+            return username
+        end
+        
+        def getFeeds
+            # list available feeds
+            answer = Array.new
             answer << "The currently available feeds are:"
             @subscriptions.keys.each { |feed|
                 answer << feed
             }
             return answer
-		end
-		
-		def	doList(sender)
-			sender = chopLocation(sender)
-			answer = Array.new
+        end
+        
+        def doList(sender)
+            sender = chopLocation(sender)
+            answer = Array.new
             answer << "Currently you are subscribed to:"
             # list my subscribed feeds
             @subscriptions.select{|k,v| v.include?(sender)}.each {|feed|
                 answer << feed[0]
             }
-			return answer
-		end
-		
-		def doSubscribe(command, sender)
-			answer = Array.new
-			sender = chopLocation(sender)
+            return answer
+        end
+        
+        def doSubscribe(command, sender)
+            answer = Array.new
+            sender = chopLocation(sender)
             # subscribe me to the given feed
             command,feed = command.split(" ",2)
             if @subscriptions.has_key?(feed) then
@@ -250,25 +250,25 @@ class FeedReader
             else
                 answer << "Sorry, your feed url is pure balls"
             end
-			return answer
-		end
-		
-		def doUnsubscribe(command, sender)
-			answer = Array.new
-			sender = chopLocation(sender)
+            return answer
+        end
+        
+        def doUnsubscribe(command, sender)
+            answer = Array.new
+            sender = chopLocation(sender)
             # remove me from the given feed
             command,feed = command.split(" ",2)
             if @subscriptions.has_key?(feed) then
                 if @subscriptions[feed].include?(sender) then
                     @subscriptions[feed].delete(sender)
                     writeConfig
-					answer << "Ok, done"
+                    answer << "Ok, done"
                 else
                     answer << "You don't subscribe to that feed"
                 end
             else
                 answer <<  "Sorry, your feed url is pure balls"
             end
-			return answer
-		end
+            return answer
+        end
 end
